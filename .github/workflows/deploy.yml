@@ -9,6 +9,8 @@ permissions:
   contents: read
   pages: write
   id-token: write
+  packages: write
+
 
 jobs:
   deploy:
@@ -25,15 +27,22 @@ jobs:
         with:
           node-version: 20
 
-      - name: Build (optional)
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test
+
+      - name: Build project
         run: |
-          echo "Nothing to build for a static PWA"
+          npm run build
           ls -R
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: .  # raíz del proyecto
+          #path: .  # raíz del proyecto
+          path: dist  # raíz del proyecto
 
       - name: Deploy to GitHub Pages
         id: deployment
@@ -45,9 +54,12 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Build and push
+      
+      - name: Build and push Docker image
         uses: docker/build-push-action@v6
         with:
+          context: .
+          file: ./Dockerfile
           push: true
-          tags: user/app:latest
+          tags: ghcr.io/${{ github.repository }}:latest        
+          
