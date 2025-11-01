@@ -1,3 +1,4 @@
+//sw.js
 const CACHE_NAME = "pwa2-cache-v4";
 const FILES_TO_CACHE = [
   "./",

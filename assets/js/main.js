@@ -1,3 +1,4 @@
+//main.js
 import { loadHeader, loadFooter } from "./header.js";
 // ./assets/js/main.js
 loadHeader();
