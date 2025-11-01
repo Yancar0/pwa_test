@@ -45,7 +45,7 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           #path: .  # raíz del proyecto
-          path: dist  # raíz del proyecto
+          path: .  # raíz del proyecto
 
       - name: Deploy to GitHub Pages
         id: deployment
