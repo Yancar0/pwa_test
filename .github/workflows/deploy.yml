@@ -64,5 +64,6 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ghcr.io/${{ github.repository }}:latest        
+          tags: ghcr.io/yancar0/pwa_test:latest   # minusculas para que funcione
+
           
