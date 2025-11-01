@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "main": "sw.js",
   "scripts": {
-    "test": "jest --maxWorkers=1"
+    "test": "jest --maxWorkers=1",
+    "build": "echo 'No build step required for static PWA'"
   },
   "repository": {
     "type": "git",
