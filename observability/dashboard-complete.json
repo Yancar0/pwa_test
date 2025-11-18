@@ -71,13 +71,21 @@
     },
     {
       "type": "trace",
-      "title": "Traces Jaeger",
-      "gridPos": {"x": 6, "y": 20, "w": 6, "h": 6},
-      "datasource": "jaeger",
+      "title": "Traces Jaeger – observability-service",
+      "gridPos": { "x": 6, "y": 20, "w": 12, "h": 8 },
+      "datasource": {
+        "type": "jaeger",
+        "uid": "Jaeger"
+      },
       "targets": [
-        {"query": "service=observability-service"}
+        {
+          "queryType": "search",
+          "query": "service=observability-service",
+          "refId": "A"
+        }
       ]
     }
+
   ],
   "templating": {
     "list": [

@@ -22,12 +22,33 @@ client.collectDefaultMetrics({ register });
 const httpRequestCounter = new client.Counter({
   name: "http_requests_total",
   help: "Total HTTP requests",
+  labelNames: ['method', 'route', 'status']
 });
+
+const httpRequestDuration = new client.Histogram({
+  name: "http_request_duration_seconds",
+  help: "HTTP request duration in seconds",
+  labelNames: ['method', 'route', 'status'],
+  buckets: [0.001, 0.005, 0.01, 0.05, 0.1, 0.5, 1, 2, 5]
+});
+
 register.registerMetric(httpRequestCounter);
+register.registerMetric(httpRequestDuration);
 
 app.use((req, res, next) => {
-  httpRequestCounter.inc();
-  console.log(`Request received: ${req.url}`);
+  const start = Date.now();
+  const method = req.method;
+  const route = req.route ? req.route.path : req.path;
+  
+  res.on('finish', () => {
+    const duration = (Date.now() - start) / 1000;
+    const status = res.statusCode;
+    
+    httpRequestCounter.inc({ method, route, status: status.toString() });
+    httpRequestDuration.observe({ method, route, status: status.toString() }, duration);
+  });
+  
+  console.log(`Request received: ${req.method} ${req.url}`);
   next();
 });
 

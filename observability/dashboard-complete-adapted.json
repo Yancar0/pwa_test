@@ -1,0 +1,119 @@
+{
+  "id": null,
+  "uid": "observability-complete",
+  "title": "Observability Complete Dashboard",
+  "tags": ["logs", "metrics", "traces", "sli", "slo", "sla"],
+  "timezone": "browser",
+  "schemaVersion": 36,
+  "panels": [
+    {
+      "id": 1,
+      "type": "logs",
+      "title": "Application Logs",
+      "gridPos": {"x": 0, "y": 0, "w": 12, "h": 8},
+      "datasource": "Loki",
+      "targets": [
+        {
+          "expr": "{job=\"/.*/\"}",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "type": "timeseries",
+      "title": "HTTP Requests Total",
+      "gridPos": {"x": 0, "y": 8, "w": 6, "h": 6},
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "rate(http_requests_total[5m])",
+          "legendFormat": "Requests/s",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "type": "timeseries",
+      "title": "CPU Usage (seconds)",
+      "gridPos": {"x": 6, "y": 8, "w": 6, "h": 6},
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "rate(process_cpu_seconds_total{job='observability-service'}[5m])",
+          "legendFormat": "CPU Usage",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "type": "timeseries",
+      "title": "Memory Usage (MB)",
+      "gridPos": {"x": 0, "y": 14, "w": 6, "h": 6},
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "process_resident_memory_bytes{job='observability-service'} / 1024 / 1024",
+          "legendFormat": "Memory MB",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "type": "stat",
+      "title": "Current Requests",
+      "gridPos": {"x": 6, "y": 14, "w": 6, "h": 3},
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "http_requests_total",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "type": "timeseries",
+      "title": "Event Loop Lag",
+      "gridPos": {"x": 0, "y": 20, "w": 6, "h": 6},
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "nodejs_eventloop_lag_seconds{job='observability-service'}",
+          "legendFormat": "Event Loop Lag",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "type": "timeseries",
+      "title": "Heap Memory Used",
+      "gridPos": {"x": 6, "y": 20, "w": 6, "h": 6},
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "nodejs_heap_size_used_bytes{job='observability-service'} / 1024 / 1024",
+          "legendFormat": "Heap MB",
+          "refId": "A"
+        }
+      ]
+    }
+  ],
+  "templating": {
+    "list": [
+      {
+        "name": "job",
+        "type": "query",
+        "label": "Service",
+        "query": "label_values(job)",
+        "datasource": "Prometheus",
+        "multi": true,
+        "includeAll": true
+      }
+    ]
+  }
+}

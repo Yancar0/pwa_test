@@ -5,7 +5,9 @@ services:
     ports:
       - "3000:3000"
     networks:
-      - monitoring
+      monitoring:
+        aliases:
+          - observability-service
     environment:
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
     depends_on:
@@ -13,7 +15,7 @@ services:
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3000/metrics"]
       interval: 10s
-      timeout: 3s
+      timeout: 30s
       retries: 5
 
   prometheus:
@@ -28,7 +30,7 @@ services:
     networks:
       - monitoring
     healthcheck:
-      test: ["CMD", "wget", "--spider", "http://localhost:9091/-/healthy"]
+      test: ["CMD", "wget", "--spider", "http://localhost:9090/-/healthy"]
       interval: 10s
       timeout: 5s
       retries: 5
