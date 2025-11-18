@@ -1,44 +1,66 @@
-version: '3.8'
-
 services:
   observability-service:
     build: .
-    container_name: metrics-service
+    container_name: observability-service
     ports:
       - "3000:3000"
     networks:
       - monitoring
-    logging:
-      driver: "json-file"
+    environment:
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
+    depends_on:
+      - jaeger
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/metrics"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
 
   prometheus:
     image: prom/prometheus
     container_name: prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
     volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
     ports:
       - "9091:9090"
     networks:
       - monitoring
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "http://localhost:9091/-/healthy"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   loki:
     image: grafana/loki
     container_name: loki
+    command: -config.file=/etc/loki/config.yml
     ports:
       - "3100:3100"
     volumes:
-      - ./loki-config.yml:/etc/loki/config.yml
+      - ./loki-config.yml:/etc/loki/config.yml:ro
+      - loki-data:/loki
     networks:
       - monitoring
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "http://localhost:3100/ready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   promtail:
     image: grafana/promtail
     container_name: promtail
+    command: -config.file=/etc/promtail/config.yml
     volumes:
-      - ./promtail-config.yml:/etc/promtail/config.yml
+      - ./promtail-config.yml:/etc/promtail/config.yml:ro
       - /var/log:/var/log
     networks:
       - monitoring
+    depends_on:
+      - loki
 
   grafana:
     image: grafana/grafana
@@ -49,18 +71,26 @@ services:
       - grafana-storage:/var/lib/grafana
     networks:
       - monitoring
+    depends_on:
+      - prometheus
+      - loki
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
 
   jaeger:
     image: jaegertracing/all-in-one
     container_name: jaeger
     ports:
       - "16687:16686"  # UI
-      - "4319:4317"    # OTLP
+      - "4320:4317"    # OTLP gRPC (para OpenTelemetry)
+      - "4319:4318"    # OTLP HTTP
     networks:
-      - monitoring
-
+      - monitoring 
 networks:
   monitoring:
+    driver: bridge
 
 volumes:
   grafana-storage:
+  loki-data:

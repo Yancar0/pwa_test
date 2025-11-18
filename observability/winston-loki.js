@@ -4,10 +4,12 @@ const LokiTransport = require('winston-loki');
 const logger = winston.createLogger({
   transports: [
     new LokiTransport({
-      host: 'http://localhost:3100',
-      labels: { job: 'mi_app' }
+      host: 'http://loki:3100',
+      labels: { job: 'observability-service' },
+      json: true
     })
   ]
 });
 
 logger.info("Hola desde Loki!");
+module.exports = logger;

@@ -1,0 +1,38 @@
+{
+  "id": null,
+  "uid": "observability-metrics",
+  "title": "Observability Metrics",
+  "tags": ["metrics", "http"],
+  "timezone": "browser",
+  "panels": [
+    {
+      "type": "graph",
+      "title": "HTTP Requests Total",
+      "targets": [
+        {
+          "expr": "http_requests_total",
+          "legendFormat": "{{method}} {{route}}"
+        }
+      ]
+    },
+    {
+      "type": "graph",
+      "title": "CPU Usage",
+      "targets": [
+        {
+          "expr": "process_cpu_seconds_total{job='observability-service'}"
+        }
+      ]
+    },
+    {
+      "type": "graph",
+      "title": "Memory Usage",
+      "targets": [
+        {
+          "expr": "process_resident_memory_bytes{job='observability-service'}"
+        }
+      ]
+    }
+  ],
+  "schemaVersion": 36
+}

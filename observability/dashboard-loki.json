@@ -1,0 +1,18 @@
+{
+  "id": null,
+  "uid": "observability-logs",
+  "title": "Observability Logs",
+  "tags": ["logs"],
+  "panels": [
+    {
+      "type": "logs",
+      "title": "Application Logs",
+      "targets": [
+        {
+          "expr": "{job='observability-service'}"
+        }
+      ]
+    }
+  ],
+  "schemaVersion": 36
+}
