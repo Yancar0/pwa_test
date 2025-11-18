@@ -1,0 +1,95 @@
+{
+  "id": null,
+  "uid": "observability-complete",
+  "title": "Observability Complete Dashboard",
+  "tags": ["logs", "metrics", "traces", "sli", "slo", "sla"],
+  "timezone": "browser",
+  "schemaVersion": 36,
+  "panels": [
+    {
+      "type": "logs",
+      "title": "Application Logs",
+      "gridPos": {"x": 0, "y": 0, "w": 12, "h": 8},
+      "targets": [
+        {"expr": "{job='observability-service'}"}
+      ]
+    },
+    {
+      "type": "graph",
+      "title": "HTTP Requests Total",
+      "gridPos": {"x": 0, "y": 8, "w": 6, "h": 6},
+      "targets": [
+        {
+          "expr": "http_requests_total",
+          "legendFormat": "{{method}} {{route}}"
+        }
+      ]
+    },
+    {
+      "type": "graph",
+      "title": "CPU Usage (seconds)",
+      "gridPos": {"x": 6, "y": 8, "w": 6, "h": 6},
+      "targets": [
+        {
+          "expr": "process_cpu_seconds_total{job='observability-service'}",
+          "legendFormat": "CPU"
+        }
+      ]
+    },
+    {
+      "type": "graph",
+      "title": "Memory Usage (bytes)",
+      "gridPos": {"x": 0, "y": 14, "w": 6, "h": 6},
+      "targets": [
+        {
+          "expr": "process_resident_memory_bytes{job='observability-service'}",
+          "legendFormat": "Memory"
+        }
+      ]
+    },
+    {
+      "type": "graph",
+      "title": "Error Rate (SLI)",
+      "gridPos": {"x": 6, "y": 14, "w": 6, "h": 6},
+      "targets": [
+        {
+          "expr": "sum(rate(http_requests_total{status=~\"5..\"}[5m])) / sum(rate(http_requests_total[5m]))",
+          "legendFormat": "Error Rate"
+        }
+      ]
+    },
+    {
+      "type": "graph",
+      "title": "Request Latency P95 (SLO)",
+      "gridPos": {"x": 0, "y": 20, "w": 6, "h": 6},
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{job='observability-service'}[5m])) by (le))",
+          "legendFormat": "P95 Latency"
+        }
+      ]
+    },
+    {
+      "type": "trace",
+      "title": "Traces Jaeger",
+      "gridPos": {"x": 6, "y": 20, "w": 6, "h": 6},
+      "datasource": "jaeger",
+      "targets": [
+        {"query": "service=observability-service"}
+      ]
+    }
+  ],
+  "templating": {
+    "list": [
+      {
+        "name": "job",
+        "type": "query",
+        "label": "Service",
+        "query": "label_values(job)",
+        "datasource": "prometheus",
+        "multi": true,
+        "includeAll": true
+      }
+    ]
+  }
+}
