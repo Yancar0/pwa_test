@@ -11,5 +11,5 @@ const logger = winston.createLogger({
   ]
 });
 
+
 logger.info("Hola desde Loki!");
-module.exports = logger;
