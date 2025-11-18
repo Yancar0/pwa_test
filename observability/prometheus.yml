@@ -5,3 +5,7 @@ scrape_configs:
   - job_name: 'observability-service'
     static_configs:
       - targets: ['observability-service:3000']
+
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['prometheus:9090']

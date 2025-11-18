@@ -17,7 +17,7 @@ services:
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
     ports:
-      - "9090:9090"
+      - "9091:9090"
     networks:
       - monitoring
 
@@ -54,8 +54,8 @@ services:
     image: jaegertracing/all-in-one
     container_name: jaeger
     ports:
-      - "16686:16686"  # UI
-      - "4317:4317"    # OTLP
+      - "16687:16686"  # UI
+      - "4319:4317"    # OTLP
     networks:
       - monitoring
 
